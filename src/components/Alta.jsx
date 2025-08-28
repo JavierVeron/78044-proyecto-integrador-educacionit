@@ -12,6 +12,8 @@ const Alta = () => {
     const [foto, setFoto] = useState("https://assets.adidas.com/images/h_2000,f_auto,q_auto,fl_lossy,c_fill,g_auto/47e212a033874a3e9d81a8acdbc0c95f_9366/D.O.N._Issue_7_Blanco_JS1299_01_00_standard.jpg");
     const [envio, setEnvio] = useState(true);
     const [deshabilitarEnvio, setDeshabilitarEnvio] = useState(true);
+    const [modoEdicion, setModoEdicion] = useState(false);
+    const [idProducto, setIdProducto] = useState(0);
 
     const generarId = () => {
         let max = 0;
@@ -25,13 +27,74 @@ const Alta = () => {
         return (max + 1);
     }
 
+    const vaciarFormulario = () => {
+        setNombre("");
+        setPrecio("");
+        setStock("");
+        setMarca("");
+        setCategoria("");
+        setDetalles("");
+        setFoto("");
+        setEnvio(false);
+    }
+
     const guardarProducto = () => {
         const id = generarId();
         const producto = {id, nombre, precio, stock, marca, categoria, detalles, foto, envio};
         items.push(producto);
         setItems([...items]);
-        console.log("Se agregó el producto #" + id);
-        
+        console.log("Se agregó el Producto #" + id);
+        vaciarFormulario();
+    }
+
+    const editarItem = (id) => {
+        vaciarFormulario();
+        setModoEdicion(true);
+        setIdProducto(id);
+        const producto = items.find(item => item.id == id);
+        setNombre(producto.nombre);
+        setPrecio(producto.precio);
+        setStock(producto.stock);
+        setMarca(producto.marca);
+        setCategoria(producto.categoria);
+        setDetalles(producto.detalles);
+        setFoto(producto.foto);
+        setEnvio(producto.envio);
+    }
+
+    const cancelarEdicion = () => {
+        vaciarFormulario();
+        setModoEdicion(false);
+        setIdProducto(0);
+    }
+
+    const actualizarProducto = () => {
+        const producto = items.find(item => item.id == idProducto);
+        producto.nombre = nombre;
+        producto.precio = precio;
+        producto.stock = stock;
+        producto.marca = marca;
+        producto.categoria = categoria;
+        producto.detalles = detalles;
+        producto.foto = foto;
+        producto.envio = envio;
+        setItems([...items]);
+        console.log("Se actualizó el Producto #" + idProducto);
+        cancelarEdicion();
+    }
+
+    const eliminarItem = (id) => {
+        const confirmar = confirm("Desea eliminar el Producto #" + id + "?");
+
+        if (confirmar) {
+            eliminarProducto(id);
+        }
+    }
+
+    const eliminarProducto = (id) => {
+        const productosActulizados = items.filter(item => item.id != id);
+        setItems([...productosActulizados]);
+        console.log("Se eliminó el Producto #" + id);
     }
 
     useEffect(() => {
@@ -76,7 +139,8 @@ const Alta = () => {
                             <input type="checkbox" className="form-check-input" disabled={deshabilitarEnvio} checked={envio} value={envio} onChange={(e) => {setEnvio(envio ? false : true)}} />
                             <label className="form-check-label">Envío Gratis</label>
                         </div>
-                        <button type="button" className="btn btn-primary" onClick={guardarProducto}>Guardar</button>
+                        <button type="button" className="btn btn-dark fw-bold me-2" onClick={modoEdicion ? actualizarProducto : guardarProducto}>{modoEdicion ? "Actualizar" : "Guardar"}</button>
+                        {modoEdicion && <button type="button" className="btn btn-dark fw-bold" onClick={cancelarEdicion}>Cancelar</button>}
                     </form>
                 </div>
             </div>
@@ -86,15 +150,16 @@ const Alta = () => {
                         <tbody>
                         {
                             items.map(item => (
-                                <tr key={item.id}>
+                                <tr key={item.id} className={item.id == idProducto ? "table-active" : ""}>
                                     <td><img src={item.foto} alt={item.nombre} width={80} /></td>
                                     <td className="align-middle">{item.nombre}</td>
                                     <td className="align-middle">${item.precio}</td>
                                     <td className="align-middle">{item.stock}</td>
                                     <td className="align-middle">{item.marca}</td>
                                     <td className="align-middle">{item.categoria}</td>
-                                    <td className="align-middle">{item.detalles}</td>
+                                    {/* <td className="align-middle">{item.detalles}</td> */}
                                     <td className="align-middle">{item.envio ? <b>Envío Gratis</b> : ""}</td>
+                                    <td className="text-end align-middle"><button className="btn btn-dark fw-bold me-2" onClick={(e) => {editarItem(item.id)}}>Editar</button><button className="btn btn-dark fw-bold" disabled={modoEdicion} onClick={(e) => {eliminarItem(item.id)}}>Eliminar</button></td>
                                 </tr>
                             ))
                         }

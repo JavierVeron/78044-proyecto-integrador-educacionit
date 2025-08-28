@@ -1,7 +1,16 @@
+import { useEffect, useState } from "react";
 import productos from "../assets/productos.json";
 import Card from "./Card";
+import { useParams } from "react-router-dom";
 
 const Catalogo = () => {
+    const [items, setItems] = useState(productos);
+    const {id} = useParams();    
+
+    useEffect(() => {
+        setItems(id ? productos.filter(item => item.categoria == id) : productos)
+    }, [id])
+
     if (!productos || productos.length == 0) {
         return (
             <div className="container my-5">
@@ -18,7 +27,7 @@ const Catalogo = () => {
             <div className="row">
                 <h2 className="text-center fw-light mb-3">Listado de Productos</h2>
                 {
-                    productos.map(item => (
+                    items.map(item => (
                         <Card key={item.id} item={item} />
                     ))
                 }
