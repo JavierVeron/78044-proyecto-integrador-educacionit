@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
-import productos from "../assets/productos.json";
+import { useContext, useEffect, useState } from "react";
+
 import Card from "./Card";
 import { useParams } from "react-router-dom";
+import { APIContext } from "./context/APIContext";
 
 const Catalogo = () => {
+    const {productos} = useContext(APIContext);
     const [items, setItems] = useState(productos);
     const {id} = useParams();    
 
@@ -27,7 +29,7 @@ const Catalogo = () => {
             <div className="row">
                 <h2 className="text-center fw-light mb-3">Listado de Productos</h2>
                 {
-                    items.map(item => (
+                    productos.map(item => (
                         <Card key={item.id} item={item} />
                     ))
                 }

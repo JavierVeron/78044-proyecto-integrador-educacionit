@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import productos from "../assets/productos.json";
+import { useContext, useEffect, useState } from "react";
+import { APIContext } from "./context/APIContext";
 
 const Alta = () => {
-    const [items, setItems] = useState(productos);
+    const {productos, agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo} = useContext(APIContext);
     const [nombre, setNombre] = useState("D.O.N. Issue 7");
     const [precio, setPrecio] = useState(169999);
     const [stock, setStock] = useState(10);
@@ -14,18 +14,6 @@ const Alta = () => {
     const [deshabilitarEnvio, setDeshabilitarEnvio] = useState(true);
     const [modoEdicion, setModoEdicion] = useState(false);
     const [idProducto, setIdProducto] = useState(0);
-
-    const generarId = () => {
-        let max = 0;
-
-        items.forEach(item => {
-            if (item.id > max) {
-                max = item.id;
-            }
-        })
-
-        return (max + 1);
-    }
 
     const vaciarFormulario = () => {
         setNombre("");
@@ -39,11 +27,8 @@ const Alta = () => {
     }
 
     const guardarProducto = () => {
-        const id = generarId();
-        const producto = {id, nombre, precio, stock, marca, categoria, detalles, foto, envio};
-        items.push(producto);
-        setItems([...items]);
-        console.log("Se agregó el Producto #" + id);
+        const producto = {nombre, precio, stock, marca, categoria, detalles, foto, envio};
+        agregarProductoCatalogo(producto);
         vaciarFormulario();
     }
 
@@ -51,7 +36,7 @@ const Alta = () => {
         vaciarFormulario();
         setModoEdicion(true);
         setIdProducto(id);
-        const producto = items.find(item => item.id == id);
+        const producto = productos.find(item => item.id == id);
         setNombre(producto.nombre);
         setPrecio(producto.precio);
         setStock(producto.stock);
@@ -69,17 +54,8 @@ const Alta = () => {
     }
 
     const actualizarProducto = () => {
-        const producto = items.find(item => item.id == idProducto);
-        producto.nombre = nombre;
-        producto.precio = precio;
-        producto.stock = stock;
-        producto.marca = marca;
-        producto.categoria = categoria;
-        producto.detalles = detalles;
-        producto.foto = foto;
-        producto.envio = envio;
-        setItems([...items]);
-        console.log("Se actualizó el Producto #" + idProducto);
+        const producto = {nombre, precio, stock, marca, categoria, detalles, foto, envio};
+        editarProductoCatalogo(idProducto, producto);
         cancelarEdicion();
     }
 
@@ -87,14 +63,8 @@ const Alta = () => {
         const confirmar = confirm("Desea eliminar el Producto #" + id + "?");
 
         if (confirmar) {
-            eliminarProducto(id);
+            eliminarProductoCatalogo(id);
         }
-    }
-
-    const eliminarProducto = (id) => {
-        const productosActulizados = items.filter(item => item.id != id);
-        setItems([...productosActulizados]);
-        console.log("Se eliminó el Producto #" + id);
     }
 
     useEffect(() => {
@@ -146,10 +116,10 @@ const Alta = () => {
             </div>
             <div className="row my-5">
                 <div className="col-md-12">
-                    {items.length == 0 ? <h3 className="text-center fw-bold text-danger mb-3">No hay Productos!</h3> : <table className="table">
+                    {productos.length == 0 ? <h3 className="text-center fw-bold text-danger mb-3">No hay Productos!</h3> : <table className="table">
                         <tbody>
                         {
-                            items.map(item => (
+                            productos.map(item => (
                                 <tr key={item.id} className={item.id == idProducto ? "table-active" : ""}>
                                     <td><img src={item.foto} alt={item.nombre} width={80} /></td>
                                     <td className="align-middle">{item.nombre}</td>
