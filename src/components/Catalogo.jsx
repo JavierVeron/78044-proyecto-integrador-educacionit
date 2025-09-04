@@ -29,7 +29,7 @@ const Catalogo = () => {
             <div className="row">
                 <h2 className="text-center fw-light mb-3">Listado de Productos</h2>
                 {
-                    productos.map(item => (
+                    items.map(item => (
                         <Card key={item.id} item={item} />
                     ))
                 }
