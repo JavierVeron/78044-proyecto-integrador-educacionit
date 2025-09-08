@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { APIContext } from "./context/APIContext";
+import { Link } from "react-router-dom";
 
 const CarritoDeCompras = () => {
     const {carrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem} = useContext(APIContext);
@@ -43,7 +44,9 @@ const CarritoDeCompras = () => {
                             <tr>
                                 <td className="text-center" colSpan={4}><b>Total a Pagar</b></td>
                                 <td className="text-center">${sumaTotalProductos()}</td>
-                                <td className="text-end">&nbsp;</td>
+                                <td className="text-end">
+                                    <Link to={"/checkout"} className="btn btn-dark btn-sm fw-bold px-5">Checkout</Link>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -1,33 +1,37 @@
-import { createContext, useState } from "react";
-import productosJSON from "../../assets/productos.json";
+import { createContext, useEffect, useState } from "react";
+import mockAPI from "../mockAPI";
 
 export const APIContext = createContext();
 
 const APIContextProvider = ({children}) => {
-    const [productos, setProductos] = useState(productosJSON);
+    const [productos, setProductos] = useState([]);
     const [carrito, setCarrito] = useState([]);
 
-    const generarId = () => {
-        let max = 0;
+    useEffect(() => {
+        cargarProductosCatalogo();
+    }, [])
 
-        productos.forEach(item => {
-            if (item.id > max) {
-                max = item.id;
+    const cargarProductosCatalogo = async () => {
+        const response = await mockAPI.get("/productos");          
+        setProductos(response.data);
+    }
+
+    const agregarProductoCatalogo = async (item) => {
+        try {
+            const response = await mockAPI.post("/productos", item);
+
+            if (response.status == 201) {
+                console.log("Se agregó el Producto #" + response.data.id);
+                cargarProductosCatalogo();
+            } else {
+                throw new Error("No se pudo agregar el Producto!")
             }
-        })
-
-        return (max + 1);
+        } catch (error) {
+            console.log(error);  
+        }
     }
 
-    const agregarProductoCatalogo = (item) => {
-        const id = generarId();
-        const producto = {id, ...item};
-        productos.push(producto);
-        setProductos([...productos]);
-        console.log("Se agregó el Producto #" + id);
-    }
-
-    const editarProductoCatalogo = (id, item) => {
+    const editarProductoCatalogo = async (id, item) => {
         let producto = productos.find(item => item.id == id);
         producto.nombre = item.nombre;
         producto.precio = item.precio;
@@ -36,15 +40,35 @@ const APIContextProvider = ({children}) => {
         producto.categoria = item.categoria;
         producto.detalles = item.detalles;
         producto.foto = item.foto;
-        producto.envio = item.envio;        
-        setProductos([...productos]);
-        console.log("Se actualizó el Producto #" + id);        
+        producto.envio = item.envio;
+        
+        try {
+            const response = await mockAPI.put("/productos/" + id, producto);            
+
+            if (response.status == 200) {
+                console.log("Se actualizó el Producto #" + response.data.id);
+                cargarProductosCatalogo();
+            } else {
+                throw new Error("No se pudo actualizar el Producto!")
+            }
+        } catch (error) {
+            console.log(error);  
+        }
     }
 
-    const eliminarProductoCatalogo = (id) => {
-        const productosActualizados = productos.filter(item => item.id != id);
-        setProductos([...productosActualizados]);
-        console.log("Se eliminó el Producto #" + id);
+    const eliminarProductoCatalogo = async (id) => {
+        try {
+            const response = await mockAPI.delete("/productos/" + id);            
+
+            if (response.status == 200) {
+                console.log("Se eliminó el Producto #" + response.data.id);
+                cargarProductosCatalogo();
+            } else {
+                throw new Error("No se pudo eliminar el Producto!")
+            }
+        } catch (error) {
+            console.log(error);  
+        }
     }
 
     const agregarProductoCarrito = (id) => {
