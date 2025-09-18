@@ -1,11 +1,37 @@
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { DECREMENTAR_ITEM, ELIMINAR_PRODUCTO, INCREMENTAR_ITEM, VACIAR_CARRITO } from "./redux/actions/CartActions";
 import { useContext } from "react";
 import { APIContext } from "./context/APIContext";
-import { Link } from "react-router-dom";
 
 const CarritoDeCompras = () => {
-    const {carrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem} = useContext(APIContext);
+    const {mostrarMensaje} = useContext(APIContext);
+    const carrito = useSelector(state => state.carrito.carrito);
+    const totalProductos = useSelector(state => state.carrito.totalProductos);
+    const sumaProductos = useSelector(state => state.carrito.sumaProductos);
+    const dispatch = useDispatch();
 
-    if (!carrito || cantidadTotalProductos() == 0) {
+    const eliminarProductoCarrito = (id) => {
+        dispatch(ELIMINAR_PRODUCTO(id));
+        mostrarMensaje("Eliminaste el Producto #" + id + " del Carrito!", "error");
+    }
+
+    const vaciarCarrito = () => {
+        dispatch(VACIAR_CARRITO);
+        mostrarMensaje("Vaciaste el Carrito!", "error");
+    }
+
+    const incrementarItem = (id) => {
+        dispatch(INCREMENTAR_ITEM(id));
+        mostrarMensaje("Incrementaste el Producto #" + id + " del Carrito!", "warning");
+    }
+
+    const decrementarItem = (id) => {
+        dispatch(DECREMENTAR_ITEM(id));
+        mostrarMensaje("Decrementaste el Producto #" + id + " del Carrito!", "warning");
+    }
+
+    if (!carrito || totalProductos == 0) {
         return (
             <div className="container my-5">
                 <div className="row">
@@ -43,7 +69,7 @@ const CarritoDeCompras = () => {
                             }
                             <tr>
                                 <td className="text-center" colSpan={4}><b>Total a Pagar</b></td>
-                                <td className="text-center">${sumaTotalProductos()}</td>
+                                <td className="text-center">${sumaProductos}</td>
                                 <td className="text-end">
                                     <Link to={"/checkout"} className="btn btn-dark btn-sm fw-bold px-5">Checkout</Link>
                                 </td>

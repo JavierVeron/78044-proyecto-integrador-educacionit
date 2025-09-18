@@ -1,5 +1,5 @@
 import { AGREGAR_PRODUCTO_CATALOGO_TYPE, EDITAR_PRODUCTO_CATALOGO_TYPE, ELIMINAR_PRODUCTO_CATALOGO_TYPE } from "../types/ProductTypes";
 
-export const AGREGAR_PRODUCTO_CATALOGO = (id) => ({type:AGREGAR_PRODUCTO_CATALOGO_TYPE, payload:id});
-export const EDITAR_PRODUCTO_CATALOGO = (id) => ({type:EDITAR_PRODUCTO_CATALOGO_TYPE, payload:id});
+export const AGREGAR_PRODUCTO_CATALOGO = (item) => ({type:AGREGAR_PRODUCTO_CATALOGO_TYPE, payload:item});
+export const EDITAR_PRODUCTO_CATALOGO = (id, item) => ({type:EDITAR_PRODUCTO_CATALOGO_TYPE, payload:{id, item}});
 export const ELIMINAR_PRODUCTO_CATALOGO = (id) => ({type:ELIMINAR_PRODUCTO_CATALOGO_TYPE, payload:id});

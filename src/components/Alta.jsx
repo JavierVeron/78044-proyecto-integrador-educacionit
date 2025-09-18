@@ -1,8 +1,12 @@
 import { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AGREGAR_PRODUCTO_CATALOGO, EDITAR_PRODUCTO_CATALOGO, ELIMINAR_PRODUCTO_CATALOGO } from "./redux/actions/ProductActions";
 import { APIContext } from "./context/APIContext";
 
 const Alta = () => {
-    const {productos, agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo} = useContext(APIContext);
+    const {mostrarMensaje} = useContext(APIContext);
+    const productos = useSelector(state => state.productos);
+    const dispatch = useDispatch();
     const [nombre, setNombre] = useState("D.O.N. Issue 7");
     const [precio, setPrecio] = useState(169999);
     const [stock, setStock] = useState(10);
@@ -28,8 +32,9 @@ const Alta = () => {
 
     const guardarProducto = () => {
         const producto = {nombre, precio, stock, marca, categoria, detalles, foto, envio};
-        agregarProductoCatalogo(producto);
+        dispatch(AGREGAR_PRODUCTO_CATALOGO(producto));
         vaciarFormulario();
+        mostrarMensaje("Se agregó un nuevo Producto!", "ok");
     }
 
     const editarItem = (id) => {
@@ -55,15 +60,17 @@ const Alta = () => {
 
     const actualizarProducto = () => {
         const producto = {nombre, precio, stock, marca, categoria, detalles, foto, envio};
-        editarProductoCatalogo(idProducto, producto);
+        dispatch(EDITAR_PRODUCTO_CATALOGO(idProducto, producto));
         cancelarEdicion();
+        mostrarMensaje("Se editó el Producto #" + idProducto, "advertencia");
     }
 
     const eliminarItem = (id) => {
         const confirmar = confirm("Desea eliminar el Producto #" + id + "?");
 
         if (confirmar) {
-            eliminarProductoCatalogo(id);
+            dispatch(ELIMINAR_PRODUCTO_CATALOGO(id));
+            mostrarMensaje("Se eliminó el Producto #" + id, "error");
         }
     }
 
@@ -127,7 +134,6 @@ const Alta = () => {
                                     <td className="align-middle">{item.stock}</td>
                                     <td className="align-middle">{item.marca}</td>
                                     <td className="align-middle">{item.categoria}</td>
-                                    {/* <td className="align-middle">{item.detalles}</td> */}
                                     <td className="align-middle">{item.envio ? <b>Envío Gratis</b> : ""}</td>
                                     <td className="text-end align-middle"><button className="btn btn-dark fw-bold me-2" onClick={(e) => {editarItem(item.id)}}>Editar</button><button className="btn btn-dark fw-bold" disabled={modoEdicion} onClick={(e) => {eliminarItem(item.id)}}>Eliminar</button></td>
                                 </tr>

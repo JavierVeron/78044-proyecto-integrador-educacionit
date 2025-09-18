@@ -1,24 +1,38 @@
 import { useContext, useState } from "react";
-import { APIContext } from "./context/APIContext";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { VACIAR_CARRITO } from "./redux/actions/CartActions";
+import { APIContext } from "./context/APIContext";
 import mockAPI from "./mockAPI";
 
 const Checkout = () => {
-    const {carrito, cantidadTotalProductos, sumaTotalProductos, vaciarCarrito} = useContext(APIContext);
+    const {mostrarMensaje} = useContext(APIContext);
+    const carrito = useSelector(state => state.carrito.carrito);
+    const totalProductos = useSelector(state => state.carrito.totalProductos);
+    const sumaProductos = useSelector(state => state.carrito.sumaProductos);
+    const dispatch = useDispatch();
+
     const [nombre, setNombre] = useState("");
     const [email, setEmail] = useState("");
     const [telefono, setTelefono] = useState("");
     const [direccion, setDireccion] = useState("");
     const [pedidoId, setPedidoId] = useState(null);
 
+    const vaciarCarrito = () => {
+        dispatch(VACIAR_CARRITO);
+    }
+
     const realizarPedido = async () => {
         try {
+            if (nombre == "" && email == "" && telefono == "" && direccion == "") {
+                throw new Error("Complete los Campos del Formulario!");
+            }
+
             const comprador = {nombre, email, telefono, direccion};
             const items = carrito.map(item => ({id:item.id, nombre:item.nombre, precio:item.precio, cantidad:item.cantidad}));
             const fechaActual = new Date();
             const fecha = `${fechaActual.getDate()}-${fechaActual.getMonth()+1}-${fechaActual.getFullYear()} ${fechaActual.getHours()}:${fechaActual.getMinutes()}:${fechaActual.getSeconds()}`;
-            const total = sumaTotalProductos();
-            const pedido = {comprador, items, fecha, total};
+            const pedido = {comprador, items, fecha, sumaProductos};
             const response = await mockAPI.post("/pedidos", pedido);            
 
             if (response.status == 201) {
@@ -27,8 +41,8 @@ const Checkout = () => {
             } else {
                 throw new Error("No se pudo actualizar el Producto!")
             }
-        } catch (error) {
-            console.log(error);  
+        } catch (error) {   
+            mostrarMensaje(error.toString(), "error"); 
         }
     }
 
@@ -44,7 +58,7 @@ const Checkout = () => {
         )
     }
 
-    if (!carrito || cantidadTotalProductos() == 0) {
+    if (!carrito || totalProductos == 0) {
         return (
             <div className="container my-5">
                 <div className="row">
@@ -96,7 +110,7 @@ const Checkout = () => {
                             }
                             <tr>
                                 <td className="text-center" colSpan={4}><b>Total a Pagar</b></td>
-                                <td className="text-center">${sumaTotalProductos()}</td>
+                                <td className="text-center">${sumaProductos}</td>
                             </tr>
                         </tbody>
                     </table>

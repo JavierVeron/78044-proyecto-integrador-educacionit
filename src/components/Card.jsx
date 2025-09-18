@@ -1,8 +1,16 @@
-import { useContext } from "react"
-import { APIContext } from "./context/APIContext"
+import { useDispatch } from "react-redux";
+import { AGREGAR_PRODUCTO } from "./redux/actions/CartActions";
+import { useContext } from "react";
+import { APIContext } from "./context/APIContext";
 
 const Card = ({item}) => {
-    const {agregarProductoCarrito} = useContext(APIContext);
+    const {mostrarMensaje} = useContext(APIContext);
+    const dispatch = useDispatch();
+
+    const agregarProductoCarrito = (id) => {
+        dispatch(AGREGAR_PRODUCTO(id));
+        mostrarMensaje("Se agregó el Producto #" + id, "ok");
+    }
 
     return (
         <div className="col-md-4">

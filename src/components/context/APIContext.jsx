@@ -3,8 +3,29 @@ import mockAPI from "../mockAPI";
 
 export const APIContext = createContext();
 
+const ToastMensaje = ({mensaje}) => {
+    return (
+        <div className="toast-container position-fixed top-0 end-0 p-3">
+            <div id="liveToast" className="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div className="toast-header">
+                    <img src="https://www.adidas.com.ar/static/glass/landing-app/adidas-landing-app/favicon.ico" className="rounded me-2" alt="Adidas" />
+                    <strong className="me-auto">Adidas Argentina</strong>
+                    <small>ahora</small>
+                    <button type="button" className="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div className="toast-body">
+                    {mensaje}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const APIContextProvider = ({children}) => {
-    const [productos, setProductos] = useState([]);
+    const [mensaje, setMensaje] = useState("");
+    const [tipoMensaje, setTipoMensaje] = useState("");
+ 
+    /* const [productos, setProductos] = useState([]);
     const [carrito, setCarrito] = useState([]);
 
     useEffect(() => {
@@ -123,9 +144,19 @@ const APIContextProvider = ({children}) => {
             setCarrito([...carrito]);
             console.log("Se decrementó la cantidad del Producto #" + id + "!");            
         }
+    } */
+
+    const mostrarMensaje = (texto, tipo) => {
+        let style = tipo == "ok" ? "bg-success" : tipo == "error" ? "bg-danger" : "bg-warning";
+        setMensaje(texto);
+        const liveToast = document.getElementById('liveToast');
+        liveToast.className = `toast ${style}`;
+        const toastBootstrap = bootstrap.Toast.getOrCreateInstance(liveToast);
+        toastBootstrap.show();
     }
 
-    return <APIContext.Provider value={{productos, carrito, agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo, agregarProductoCarrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem}}>
+    return <APIContext.Provider value={{mostrarMensaje, /* , agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo, agregarProductoCarrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem */}}>
+        <ToastMensaje mensaje={mensaje} />
         {children}
     </APIContext.Provider>
 }

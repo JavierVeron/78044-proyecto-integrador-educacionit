@@ -1,9 +1,8 @@
-import { useContext } from "react"
 import { Link } from "react-router-dom"
-import { APIContext } from "./context/APIContext"
+import { useSelector } from "react-redux"
 
 const NavBar = () => {
-    const {cantidadTotalProductos} = useContext(APIContext);
+    const totalProductos = useSelector(state => state.carrito.totalProductos);
 
     return (
         <ul className="nav justify-content-center">
@@ -23,7 +22,7 @@ const NavBar = () => {
                 <Link to={"/alta"} className="nav-link text-dark fw-bold">Alta</Link>
             </li>
             <li className="nav-item">
-                <Link to={"/carrito"} className="nav-link text-dark fw-bold">Carrito <span className="badge text-bg-secondary">{cantidadTotalProductos()}</span></Link>
+                <Link to={"/carrito"} className="nav-link text-dark fw-bold">Carrito <span className="badge text-bg-secondary">{totalProductos}</span></Link>
             </li>
         </ul>
     )

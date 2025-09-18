@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from "react";
-
-import Card from "./Card";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom";
-import { APIContext } from "./context/APIContext";
+import Card from "./Card";
 
 const Catalogo = () => {
-    const {productos} = useContext(APIContext);
+    const productos = useSelector(state => state.productos);
     const [items, setItems] = useState(productos);
     const {id} = useParams();    
 
