@@ -4,7 +4,7 @@ import { AGREGAR_PRODUCTO_CATALOGO, EDITAR_PRODUCTO_CATALOGO, ELIMINAR_PRODUCTO_
 import { APIContext } from "./context/APIContext";
 
 const Alta = () => {
-    const {mostrarMensaje} = useContext(APIContext);
+    const {mostrarMensaje, mostrarModal} = useContext(APIContext);
     const productos = useSelector(state => state.productos);
     const dispatch = useDispatch();
     const [nombre, setNombre] = useState("D.O.N. Issue 7");
@@ -66,12 +66,17 @@ const Alta = () => {
     }
 
     const eliminarItem = (id) => {
-        const confirmar = confirm("Desea eliminar el Producto #" + id + "?");
+        /* const confirmar = confirm("Desea eliminar el Producto #" + id + "?");
 
         if (confirmar) {
             dispatch(ELIMINAR_PRODUCTO_CATALOGO(id));
             mostrarMensaje("Se eliminó el Producto #" + id, "error");
-        }
+        } */
+
+        mostrarModal("Desea eliminar el Producto #" + id + "?", () => {
+            dispatch(ELIMINAR_PRODUCTO_CATALOGO(id));
+            mostrarMensaje("Se eliminó el Producto #" + id, "error");
+        })
     }
 
     useEffect(() => {

@@ -21,9 +21,31 @@ const ToastMensaje = ({mensaje}) => {
     )
 }
 
+const ModalMensaje = ({mensaje, fn}) => {
+    return (
+        <div className="modal fade" id="liveModal" tabIndex="-1" aria-hidden="true">
+            <div className="modal-dialog">
+                <div className="modal-content">
+                <div className="modal-header">
+                    <h1 className="modal-title fs-5">Adidas Argentina</h1>
+                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div className="modal-body">
+                    {mensaje}
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn btn-primary" onClick={fn}>Eliminar</button>
+                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const APIContextProvider = ({children}) => {
     const [mensaje, setMensaje] = useState("");
-    const [tipoMensaje, setTipoMensaje] = useState("");
+    const [fn, setFn] = useState(null);
  
     /* const [productos, setProductos] = useState([]);
     const [carrito, setCarrito] = useState([]);
@@ -155,8 +177,17 @@ const APIContextProvider = ({children}) => {
         toastBootstrap.show();
     }
 
-    return <APIContext.Provider value={{mostrarMensaje, /* , agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo, agregarProductoCarrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem */}}>
+    const mostrarModal = (texto, unaFuncion) => {
+        setMensaje(texto);
+        setFn(unaFuncion);
+        const modalToggle = document.getElementById("liveModal");
+        const myModal = new bootstrap.Modal(modalToggle, {});
+        myModal.show(modalToggle);
+    }
+
+    return <APIContext.Provider value={{mostrarMensaje, mostrarModal /* , agregarProductoCatalogo, editarProductoCatalogo, eliminarProductoCatalogo, agregarProductoCarrito, eliminarProductoCarrito, vaciarCarrito, cantidadTotalProductos, sumaTotalProductos, incrementarItem, decrementarItem */}}>
         <ToastMensaje mensaje={mensaje} />
+        <ModalMensaje mensaje={mensaje} fn={fn} />
         {children}
     </APIContext.Provider>
 }
